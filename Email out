@@ -1,0 +1,19 @@
+function sendEmailWithLink() {
+  // Get the active spreadsheet
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Customize the subject and body of the email
+  var subject = "Untagged vehicles";
+  var body = "Hi all,\n\n This report has been updated" + spreadsheet.getUrl() + "\n\nRegards,\nSignature";
+  
+  // Get the list of email addresses from a specific column in a specific sheet
+  var sheet = spreadsheet.getSheetByName('email list'); // for sheet name email list
+  var emailColumn = 2; // Assuming email addresses are in column B
+  
+  var lastRow = sheet.getLastRow();
+  var emailAddresses = sheet.getRange(2, emailColumn, lastRow - 1, 1).getValues().flat(); // Assumes header is in row 1
+  MailApp.sendEmail({
+  to: emailAddresses.join(","),
+  subject: subject,
+  body:body});
+}
