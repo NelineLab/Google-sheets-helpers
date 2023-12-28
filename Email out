@@ -3,17 +3,39 @@ function sendEmailWithLink() {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   
   // Customize the subject and body of the email
-  var subject = "Untagged vehicles";
+  var subject = "Report";
   var body = "Hi all,\n\n This report has been updated" + spreadsheet.getUrl() + "\n\nRegards,\nSignature";
   
-  // Get the list of email addresses from a specific column in a specific sheet
+ // Get the list of email addresses from a specific column in a specific sheet
   var sheet = spreadsheet.getSheetByName('email list'); // for sheet name email list
   var emailColumn = 2; // Assuming email addresses are in column B
+
+  var sheet = spreadsheet.getSheetByName('email list'); // for sheet name email list
+  var emailccColumn = 6; // Assuming email addresses are in column B  
   
-  var lastRow = sheet.getLastRow();
-  var emailAddresses = sheet.getRange(2, emailColumn, lastRow - 1, 1).getValues().flat(); // Assumes header is in row 1
+  var lastRowEmail = getlastcolvalue('email list','B');
+  console.log(lastRowEmail);
+  var emailAddresses = sheet.getRange(2, emailColumn, lastRowEmail - 1, 1).getValues().flat(); // Assumes header is in row 1
+
+  var lastRowEmailcc = getlastcolvalue('email list','F')
+  var emailAddressescc = sheet.getRange(2, emailccColumn, lastRowEmail - 1, 1).getValues().flat(); // Assumes header is in row 1
+
   MailApp.sendEmail({
   to: emailAddresses.join(","),
+  cc: emailAddressescc.join(','),
   subject: subject,
   body:body});
+}
+
+function getlastcolvalue(sheetName, columnName) {
+var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  var columnValues = sheet.getRange(columnName + "1:" + columnName + sheet.getLastRow()).getValues();
+  
+  for (var i = columnValues.length - 1; i >= 0; i--) {
+    if (columnValues[i][0] !== "") {
+      return i + 1; // Adding 1 to convert from zero-based index to row number
+    }
+  }
+  
+  return 0; // Return 0 if the column is entirely empty
 }
